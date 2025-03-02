@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		78261DD12D73981D00301CE0 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 78261DD02D73981D00301CE0 /* SDWebImage */; };
+		78261DD32D73981D00301CE0 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 78261DD22D73981D00301CE0 /* SDWebImageMapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		78755E492D707E9D00640B31 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78261DD32D73981D00301CE0 /* SDWebImageMapKit in Frameworks */,
+				78261DD12D73981D00301CE0 /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +132,8 @@
 			);
 			name = MovieAppWithUIKit;
 			packageProductDependencies = (
+				78261DD02D73981D00301CE0 /* SDWebImage */,
+				78261DD22D73981D00301CE0 /* SDWebImageMapKit */,
 			);
 			productName = MovieAppWithUIKit;
 			productReference = 78755E322D707E9C00640B31 /* MovieAppWithUIKit.app */;
@@ -208,6 +217,9 @@
 			);
 			mainGroup = 78755E292D707E9C00640B31;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				78261DCF2D73981D00301CE0 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 78755E332D707E9C00640B31 /* Products */;
 			projectDirPath = "";
@@ -569,6 +581,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		78261DCF2D73981D00301CE0 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.21.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		78261DD02D73981D00301CE0 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78261DCF2D73981D00301CE0 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		78261DD22D73981D00301CE0 /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78261DCF2D73981D00301CE0 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 78755E2A2D707E9C00640B31 /* Project object */;
 }
