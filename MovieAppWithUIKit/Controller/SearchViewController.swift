@@ -8,109 +8,124 @@
 import UIKit
 import SwiftUI
 
-class SearchViewController: UIViewController {
-    
-    var discoverMovies: [Movie] = []               // Tüm filmler (orijinal liste)
-    var filteredMovies: [Movie] = []                // Filtrelenmiş filmler (arama sonucu gösterilecek)
+import UIKit
 
-    private let discoverTableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .plain)
-        tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.reuseIdentifier)
-        return tableView
+class SearchViewController: UIViewController {
+
+    
+    private var movies: [Movie] = [Movie]()
+
+    private let discoverTable: UITableView = {
+        let table = UITableView()
+        table.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.reuseIdentifier)
+        return table
     }()
     
-    private let searchResultViewController = SearchResultViewController()
-
-    private lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: searchResultViewController)
-        searchController.searchBar.placeholder = "Search for a Movie or a TV Show..."
-        searchController.searchBar.searchBarStyle = .minimal
-        return searchController
+    private let searchController: UISearchController = {
+        let controller = UISearchController(searchResultsController: SearchResultViewController())
+        controller.searchBar.placeholder = "Search for a Movie or a Tv show"
+        controller.searchBar.searchBarStyle = .minimal
+        return controller
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Search"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.topItem?.largeTitleDisplayMode = .always
+        navigationController?.navigationItem.largeTitleDisplayMode = .always
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
-        // TableView setup
-        discoverTableView.dataSource = self
-        discoverTableView.delegate = self
-        view.addSubview(discoverTableView)
-        
-        // SearchController setup
+        view.addSubview(discoverTable)
+        discoverTable.delegate = self
+        discoverTable.dataSource = self
         navigationItem.searchController = searchController
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = true  // Arka planı karartmasın
         
-        fetchDiscoverMovie()
+        navigationController?.navigationBar.tintColor = .white
+        fetchDiscoverMovies()
+        
+        searchController.searchResultsUpdater = self
     }
     
-    func fetchDiscoverMovie() {
+    
+    private func fetchDiscoverMovies() {
         APICaller.shared.getDiscoverMovies { [weak self] result in
             switch result {
             case .success(let movies):
+                self?.movies = movies
                 DispatchQueue.main.async {
-                    self?.discoverMovies = movies
-                    self?.filteredMovies = movies   // İlk açılışta tümünü göster
-                    self?.discoverTableView.reloadData()
+                    self?.discoverTable.reloadData()
                 }
-            case .failure(_):
-                break
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
     }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        discoverTableView.frame = view.bounds
+        discoverTable.frame = view.bounds
     }
+ 
+    
+
 }
 
+
 extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredMovies.count  // Arama varsa filtrelenmiş, yoksa tümü
+        return movies.count;
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MovieTableViewCell.reuseIdentifier, for: indexPath) as? MovieTableViewCell else {
             return UITableViewCell()
         }
-        cell.configure(with: filteredMovies[indexPath.row])
-        return cell
+        
+        
+        let movie = movies[indexPath.row]
+        cell.configure(with: movie)
+        
+        return cell;
     }
     
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 130
+        return 140
     }
+    
+   
 }
 
-extension SearchViewController: UISearchResultsUpdating {
+extension SearchViewController: UISearchResultsUpdating{
+    
     func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text?.lowercased() else {
-            filteredMovies = discoverMovies
-            discoverTableView.reloadData()
-            return
-        }
+        let searchBar = searchController.searchBar
         
-        if searchText.isEmpty {
-            filteredMovies = discoverMovies
-        } else {
-            
-            filteredMovies = discoverMovies.filter { movie in
-                var titlem = movie.original_title ?? ""
-                return titlem.lowercased().contains(searchText)
+        guard let query = searchBar.text,
+              !query.trimmingCharacters(in: .whitespaces).isEmpty,
+              query.trimmingCharacters(in: .whitespaces).count >= 3,
+              let resultsController = searchController.searchResultsController as? SearchResultViewController else {
+                  return
+              }
+        
+        APICaller.shared.search(with: query) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let movies):
+                    resultsController.movies = movies
+                    resultsController.searchResultCollectionView.reloadData()
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
             }
         }
-        searchResultViewController.movies = filteredMovies
-            searchResultViewController.searchResultCollectionView.reloadData()
-        discoverTableView.reloadData()
     }
+
 }
+
 
 // SwiftUI Preview (Aynı kalabilir)
 struct SearchViewController_Previews: PreviewProvider {

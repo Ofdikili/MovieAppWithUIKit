@@ -8,11 +8,20 @@
 import UIKit
 import SwiftUI
 
+protocol CollectionViewTableViewCellDelegate: AnyObject {
+    func collectionViewTableViewCellDidTapCell(
+        _ cell: CollectionViewTableViewCell
+        ,viewModel: MoviePreviewViewModel
+    )
+}
+
 class CollectionViewTableViewCell: UITableViewCell {
     
     private var items: [Movie] = []
     
     static let identifier = "CollectionViewTableViewCell"
+    
+    weak var delegate: CollectionViewTableViewCellDelegate?
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -64,7 +73,37 @@ extension CollectionViewTableViewCell : UICollectionViewDataSource, UICollection
         cell.configure(with : poster)
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let movie = items[indexPath.row]
+        guard let titleName = movie.original_name else { return }
+        APICaller.shared.getMovie(with: titleName + " trailer") { [weak self] result in
+            switch result {
+            case .success(let videoElement):
+                DispatchQueue.main.async {
+                    let movie = self?.items[indexPath.row]
+                    guard let overview =
+                            movie?.overview else {
+                        return
+                    }
+                    guard let strongSelf =
+                            self else {
+                        return
+                    }
+                    let viewModel = MoviePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: overview)
+                    self?.delegate?.collectionViewTableViewCellDidTapCell(strongSelf,viewModel:viewModel)
+                    print(videoElement)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 }
+
+
 
 
 struct CollectionViewCellPreview: UIViewRepresentable {
