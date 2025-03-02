@@ -44,8 +44,7 @@ class HomeViewController: UIViewController {
         getTvMovies()
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
-        
-    }
+     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -137,6 +136,16 @@ class HomeViewController: UIViewController {
     }
 }
 
+extension HomeViewController : CollectionViewTableViewCellDelegate {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: MoviePreviewViewModel) {
+       DispatchQueue.main.async { [weak self] in
+           let vc = MoviePreviewViewController()
+           vc.configure(with: viewModel)
+           self?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+}
+
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -151,6 +160,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
+        cell.delegate = self
         switch indexPath.section {
         case HomeSection.trending.rawValue:
             cell.configure(with: self.trendingMoviewList)

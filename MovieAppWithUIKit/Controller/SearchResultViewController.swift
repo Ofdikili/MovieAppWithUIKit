@@ -9,12 +9,12 @@ import UIKit
 
 class SearchResultViewController: UIViewController {
     
-    var movies : [Movie] = []
+    public var movies : [Movie] = []
     
     
-    var searchResultCollectionView: UICollectionView = {
+    public var searchResultCollectionView: UICollectionView = {
         var layout = UICollectionViewFlowLayout()
-        var itemSize = CGSize(width: 100, height: 200)
+        layout.itemSize = CGSize(width:UIScreen.main.bounds.width/3 - 10, height:200)
         var collectionView = UICollectionView(frame: .zero, collectionViewLayout:layout)
         collectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
         return collectionView
