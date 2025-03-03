@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import SDWebImage
 class HeroHeaderUIView: UIView {
+    
 
     private let heroView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "heroExampleImage")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -69,6 +70,16 @@ class HeroHeaderUIView: UIView {
         ]
         gradientLayer.frame = bounds
         layer.addSublayer(gradientLayer)
+    }
+    
+    func configure(with movie:Movie?){
+        guard let posterImage = movie?.poster_path else {
+            return
+        }
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterImage)") else {
+            return
+        }
+        heroView.sd_setImage(with: url,completed: nil)
     }
 
     required init?(coder: NSCoder) {

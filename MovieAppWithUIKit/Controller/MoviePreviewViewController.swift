@@ -69,7 +69,8 @@ class MoviePreviewViewController: UIViewController {
         
         let overViewConstraints: [NSLayoutConstraint] = [
             overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
-            overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+            overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            overviewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ]
         
         let downloadButtonConstraints: [NSLayoutConstraint] = [
@@ -89,7 +90,7 @@ class MoviePreviewViewController: UIViewController {
     
     func configure (with model : MoviePreviewViewModel){
         titleLabel.text = model.title
-        overviewLabel.text = model.title
+        overviewLabel.text = model.titleOverview
         guard let url = URL(string: "https://www.youtube.com/embed/\(model.youtubeView.id.videoId)") else { return }
         youtubeWebView.load(URLRequest(url: url))
         
