@@ -28,6 +28,8 @@ class HomeViewController: UIViewController {
     var topRatedMoviewList : [Movie] = []
     var upComingMoviewList : [Movie] = []
     var tvMovieList : [Movie] = []
+    var randomMovie : Movie?
+    var headerView : HeroHeaderUIView?
     let sectionTitle : [String] = ["Trending Movies","Popular","Trending TV","Upcoming Mo","Top rated"]
     
     override func viewDidLoad() {
@@ -42,7 +44,7 @@ class HomeViewController: UIViewController {
         getTopRatedMovies()
         getUpComingMovies()
         getTvMovies()
-        let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 450))
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
      }
     
@@ -57,6 +59,8 @@ class HomeViewController: UIViewController {
             case .success(let movies):
                 DispatchQueue.main.async {
                     self?.trendingMoviewList = movies
+                    self?.randomMovie = movies.randomElement()
+                    self?.headerView?.configure(with: self?.randomMovie)
                     self?.homeFeedTable.reloadData()
                 }
             case .failure(_):

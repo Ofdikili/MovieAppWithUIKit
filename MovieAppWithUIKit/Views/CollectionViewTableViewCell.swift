@@ -57,6 +57,17 @@ class CollectionViewTableViewCell: UITableViewCell {
            collectionView.reloadData()
        }
     
+    private func downloadTitleAt(indexPath:IndexPath){
+        DataPercistenceManager.shared.DownloadMoview(with: items[indexPath.item], completeion: {result in
+            switch result {
+            case .success():
+                print("success")
+            case .failure(_):
+                print("error")
+            }
+        }
+    )}
+    
 }
 
 extension CollectionViewTableViewCell : UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -101,9 +112,27 @@ extension CollectionViewTableViewCell : UICollectionViewDataSource, UICollection
             }
         }
     }
+    
+    func downloadMovie(indexPath:IndexPath){
+        print("Downloading movie at \(indexPath)")
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first else { return nil }
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+            let shareAction = UIAction(title: "Downlaod", image: UIImage(systemName: "square.and.arrow.up")) { [self] action in
+                downloadTitleAt(indexPath: indexPath)
+            }
+
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { action in
+                print("Delete tapped for item at \(indexPath)")
+            }
+
+            return UIMenu(title: "Movie Actions", children: [shareAction, deleteAction])
+        }
+    }
 }
-
-
 
 
 struct CollectionViewCellPreview: UIViewRepresentable {
